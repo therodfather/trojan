@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@ void SSLSession::remove_session_cb(SSL_CTX*, SSL_SESSION *session) {
 }
 
 SSL_SESSION *SSLSession::get_session() {
-    if (sessions.size() == 0) {
-        return NULL;
+    if (sessions.empty()) {
+        return nullptr;
     }
     return sessions.front();
 }

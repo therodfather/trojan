@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire, wongsyrone
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,16 @@ int main(int argc, const char *argv[]) {
 #else // ENABLE_NAT
             Log::log("[Disabled] NAT Support", Log::FATAL);
 #endif // ENABLE_NAT
+#ifdef ENABLE_TLS13_CIPHERSUITES
+            Log::log(" [Enabled] TLS1.3 Ciphersuites Support", Log::FATAL);
+#else // ENABLE_TLS13_CIPHERSUITES
+            Log::log("[Disabled] TLS1.3 Ciphersuites Support", Log::FATAL);
+#endif // ENABLE_TLS13_CIPHERSUITES
+#ifdef ENABLE_REUSE_PORT
+            Log::log(" [Enabled] TCP Port Reuse Support", Log::FATAL);
+#else // ENABLE_REUSE_PORT
+            Log::log("[Disabled] TCP Port Reuse Support", Log::FATAL);
+#endif // ENABLE_REUSE_PORT
             Log::log("OpenSSL Information", Log::FATAL);
             if (OpenSSL_version_num() != OPENSSL_VERSION_NUMBER) {
                 Log::log(string("\tCompile-time Version: ") + OPENSSL_VERSION_TEXT, Log::FATAL);

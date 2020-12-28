@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire, wongsyrone
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@
 class Authenticator {
 private:
 #ifdef ENABLE_MYSQL
-    MYSQL con;
+    MYSQL con{};
 #endif // ENABLE_MYSQL
     enum {
         PASSWORD_LENGTH=56
     };
-    bool is_valid_password(const std::string &password);
+    static bool is_valid_password(const std::string &password);
 public:
-    Authenticator(const Config &config);
+    explicit Authenticator(const Config &config);
     bool auth(const std::string &password);
     void record(const std::string &password, uint64_t download, uint64_t upload);
     ~Authenticator();

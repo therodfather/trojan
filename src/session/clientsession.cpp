@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire, wongsyrone
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,14 @@ tcp::socket& ClientSession::accept_socket() {
 
 void ClientSession::start() {
     boost::system::error_code ec;
-    start_time = time(NULL);
+    start_time = time(nullptr);
     in_endpoint = in_socket.remote_endpoint(ec);
     if (ec) {
         destroy();
         return;
     }
     auto ssl = out_socket.native_handle();
-    if (config.ssl.sni != "") {
+    if (!config.ssl.sni.empty()) {
         SSL_set_tlsext_host_name(ssl, config.ssl.sni.c_str());
     }
     if (config.ssl.reuse_session) {
@@ -222,8 +222,8 @@ void ClientSession::in_sent() {
                 udp_async_read();
             }
             auto self = shared_from_this();
-            resolver.async_resolve(config.remote_addr, to_string(config.remote_port), [this, self](const boost::system::error_code error, tcp::resolver::results_type results) {
-                if (error) {
+            resolver.async_resolve(config.remote_addr, to_string(config.remote_port), [this, self](const boost::system::error_code error, const tcp::resolver::results_type& results) {
+                if (error || results.empty()) {
                     Log::log_with_endpoint(in_endpoint, "cannot resolve remote server hostname " + config.remote_addr + ": " + error.message(), Log::ERROR);
                     destroy();
                     return;
@@ -329,8 +329,9 @@ void ClientSession::udp_recv(const string &data, const udp::endpoint&) {
         return;
     }
     SOCKS5Address address;
-    int address_len = address.parse(data.substr(3));
-    if (address_len == -1) {
+    size_t address_len;
+    bool is_addr_valid = address.parse(data.substr(3), address_len);
+    if (!is_addr_valid) {
         Log::log_with_endpoint(in_endpoint, "bad UDP packet", Log::ERROR);
         destroy();
         return;
@@ -350,8 +351,9 @@ void ClientSession::udp_recv(const string &data, const udp::endpoint&) {
 void ClientSession::udp_sent() {
     if (status == UDP_FORWARD) {
         UDPPacket packet;
-        int packet_len = packet.parse(udp_data_buf);
-        if (packet_len == -1) {
+        size_t packet_len;
+        bool is_packet_valid = packet.parse(udp_data_buf, packet_len);
+        if (!is_packet_valid) {
             if (udp_data_buf.length() > MAX_LENGTH) {
                 Log::log_with_endpoint(in_endpoint, "UDP packet too long", Log::ERROR);
                 destroy();
@@ -362,7 +364,13 @@ void ClientSession::udp_sent() {
         }
         Log::log_with_endpoint(in_endpoint, "received a UDP packet of length " + to_string(packet.length) + " bytes from " + packet.address.address + ':' + to_string(packet.address.port));
         SOCKS5Address address;
-        int address_len = address.parse(udp_data_buf);
+        size_t address_len;
+        bool is_addr_valid = address.parse(udp_data_buf, address_len);
+        if (!is_addr_valid) {
+            Log::log_with_endpoint(in_endpoint, "udp_sent: invalid UDP packet address", Log::ERROR);
+            destroy();
+            return;
+        }
         string reply = string("\x00\x00\x00", 3) + udp_data_buf.substr(0, address_len) + packet.payload;
         udp_data_buf = udp_data_buf.substr(packet_len);
         recv_len += packet.length;
@@ -375,7 +383,7 @@ void ClientSession::destroy() {
         return;
     }
     status = DESTROY;
-    Log::log_with_endpoint(in_endpoint, "disconnected, " + to_string(recv_len) + " bytes received, " + to_string(sent_len) + " bytes sent, lasted for " + to_string(time(NULL) - start_time) + " seconds", Log::INFO);
+    Log::log_with_endpoint(in_endpoint, "disconnected, " + to_string(recv_len) + " bytes received, " + to_string(sent_len) + " bytes sent, lasted for " + to_string(time(nullptr) - start_time) + " seconds", Log::INFO);
     boost::system::error_code ec;
     resolver.cancel();
     if (in_socket.is_open()) {

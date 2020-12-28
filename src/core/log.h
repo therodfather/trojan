@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire, wongsyrone
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ public:
         FATAL = 4,
         OFF = 5
     };
+    typedef std::function<void(const std::string &, Level)> LogCallback;
     static Level level;
     static FILE *keylog;
     static void log(const std::string &message, Level level = ALL);
@@ -45,9 +46,11 @@ public:
     static void log_with_endpoint(const boost::asio::ip::tcp::endpoint &endpoint, const std::string &message, Level level = ALL);
     static void redirect(const std::string &filename);
     static void redirect_keylog(const std::string &filename);
+    static void set_callback(LogCallback cb);
     static void reset();
 private:
     static FILE *output_stream;
+    static LogCallback log_callback;
 };
 
 #endif // _LOG_H_

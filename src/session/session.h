@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ protected:
         SSL_SHUTDOWN_TIMEOUT = 30
     };
     const Config &config;
-    uint8_t in_read_buf[MAX_LENGTH];
-    uint8_t out_read_buf[MAX_LENGTH];
-    uint8_t udp_read_buf[MAX_LENGTH];
+    uint8_t in_read_buf[MAX_LENGTH]{};
+    uint8_t out_read_buf[MAX_LENGTH]{};
+    uint8_t udp_read_buf[MAX_LENGTH]{};
     uint64_t recv_len;
     uint64_t sent_len;
-    time_t start_time;
+    time_t start_time{};
     std::string out_write_buf;
     std::string udp_data_buf;
     boost::asio::ip::tcp::resolver resolver;

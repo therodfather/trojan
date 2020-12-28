@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,11 @@ public:
         std::string key;
         std::string key_password;
         std::string cipher;
+        std::string cipher_tls13;
         bool prefer_server_cipher;
         std::string sni;
         std::string alpn;
+        std::map<std::string, uint16_t> alpn_port_override;
         bool reuse_session;
         bool session_ticket;
         long session_timeout;
@@ -65,6 +67,7 @@ public:
         bool prefer_ipv4;
         bool no_delay;
         bool keep_alive;
+        bool reuse_port;
         bool fast_open;
         int fast_open_qlen;
     } tcp;
@@ -76,6 +79,9 @@ public:
         std::string database;
         std::string username;
         std::string password;
+        std::string key;
+        std::string cert;
+        std::string ca;
     } mysql;
     void load(const std::string &filename);
     void populate(const std::string &JSON);

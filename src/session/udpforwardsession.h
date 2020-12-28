@@ -1,7 +1,7 @@
 /*
  * This file is part of the trojan project.
  * Trojan is an unidentifiable mechanism that helps you bypass GFW.
- * Copyright (C) 2017-2019  GreaterFire
+ * Copyright (C) 2017-2020  The Trojan Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@ private:
     void out_sent();
     void timer_async_wait();
 public:
-    UDPForwardSession(const Config &config, boost::asio::io_context &io_context, boost::asio::ssl::context &ssl_context, const boost::asio::ip::udp::endpoint &endpoint, const UDPWrite &in_write);
-    boost::asio::ip::tcp::socket& accept_socket();
-    void start();
+    UDPForwardSession(const Config &config, boost::asio::io_context &io_context, boost::asio::ssl::context &ssl_context, const boost::asio::ip::udp::endpoint &endpoint, UDPWrite in_write);
+    boost::asio::ip::tcp::socket& accept_socket() override;
+    void start() override;
     bool process(const boost::asio::ip::udp::endpoint &endpoint, const std::string &data);
 };
 
